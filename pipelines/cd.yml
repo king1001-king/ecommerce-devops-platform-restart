@@ -1,0 +1,21 @@
+trigger: none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  azureSubscription: '<replace-with-service-connection-name>'
+  appName: '<replace-with-app-service-name>'
+  resourceGroup: 'ecommerce-rg-dev'
+  packagePath: '$(Pipeline.Workspace)/drop/*.zip'
+
+stages:
+- stage: Deploy
+  jobs:
+  - job: DeployWebApp
+    steps:
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: $(azureSubscription)
+        appName: $(appName)
+        package: $(packagePath)
