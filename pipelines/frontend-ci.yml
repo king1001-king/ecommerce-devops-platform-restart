@@ -1,0 +1,22 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    cd app/frontend
+    npm install
+    npm run build
+  displayName: 'Build frontend app'
