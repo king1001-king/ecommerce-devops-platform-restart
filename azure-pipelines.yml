@@ -1,0 +1,44 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+# ✅ 1. Setup .NET SDK for backend
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+
+# ✅ 2. Restore and Build Backend
+- task: DotNetCoreCLI@2
+  displayName: 'Restore Backend'
+  inputs:
+    command: 'restore'
+    projects: 'app/backend/backend.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Backend'
+  inputs:
+    command: 'build'
+    projects: 'app/backend/backend.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+# ✅ 3. Copy Static Frontend Files
+- task: CopyFiles@2
+  displayName: 'Copy Static Frontend'
+  inputs:
+    sourceFolder: 'app/frontend'
+    contents: '**'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/frontend'
+
+# ✅ 4. Publish Artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'ecommerce-artifacts'
+    publishLocation: 'Container'
